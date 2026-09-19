@@ -13,6 +13,32 @@ npm run build     # production build to dist/
 Generate `public/icons/icon-192.png`, `icon-512.png`, `icon-maskable-192.png`,
 and `icon-maskable-512.png` before deploying (any square PNG works for dev).
 
+## Deploying to GitHub Pages
+
+GitHub Pages only serves static files — it does **not** run a build step for
+you. `index.html` in this repo points at `/src/main.tsx`, which only works
+through Vite's dev server or after a build, so pushing the raw source to
+`main` and pointing Pages at it will show a blank page.
+
+**This repo includes `.github/workflows/deploy.yml`**, which builds the app
+with Vite and publishes the `dist/` output automatically on every push to
+`main`. To use it:
+
+1. In your repo, go to **Settings → Pages → Build and deployment → Source**
+   and select **GitHub Actions** (not "Deploy from a branch").
+2. `vite.config.ts` sets `base: '/Offline-I-O-SCADA-Loop-Validator/'` — this
+   **must exactly match your repo name** (case-sensitive), since project
+   Pages sites are served from `https://<user>.github.io/<repo-name>/`, not
+   the domain root. If you rename the repo, update this value too.
+3. Push to `main`. The Actions tab will show the build/deploy run; the site
+   updates automatically a minute or two later.
+
+If you'd rather not use Actions and just want to commit a `dist/` folder to
+`main`/root directly: run `npm run build` locally, then copy everything from
+`dist/` into your repo root (or a `docs/` folder, pointing Pages at that
+instead) and commit it. You'll need to repeat this manually after every
+change, which is why the Actions workflow above is the better default.
+
 ## Architecture
 
 ```

@@ -6,7 +6,12 @@ import './index.css';
 async function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
   try {
-    const reg = await navigator.serviceWorker.register('/service-worker.js');
+    // BASE_URL is Vite's configured `base` (e.g. '/' locally, or
+    // '/Offline-I-O-SCADA-Loop-Validator/' on GitHub Pages). The service
+    // worker's own `scope` defaults to the directory it's served from, so
+    // registering it at this path also gives it the correct scope automatically.
+    const swUrl = `${import.meta.env.BASE_URL}service-worker.js`;
+    const reg = await navigator.serviceWorker.register(swUrl);
 
     // When the network comes back, ask for a Background Sync. Most modern
     // Chromium-based browsers support this natively; for engines that don't

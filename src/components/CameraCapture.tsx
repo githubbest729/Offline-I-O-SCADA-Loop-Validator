@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { Camera, X, RotateCcw } from 'lucide-react';
 
 interface CameraCaptureProps {

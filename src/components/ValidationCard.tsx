@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { X, Camera, CheckCircle2, XCircle, Clock, PenLine, Trash2 } from 'lucide-react';
+import { X, Camera, CheckCircle2, XCircle, Clock, PenLine, Trash2, type LucideIcon } from 'lucide-react';
 import { db, setLoopStatus, attachPhoto, signOffLoop } from '../db/database';
 import { CameraCapture } from './CameraCapture';
 import type { Loop, LoopStatus } from '../types';
@@ -167,7 +167,7 @@ export function ValidationCard({ loop, onClose }: ValidationCardProps) {
 
 function StatusButton({ label, icon: Icon, active, activeClass, onClick, disabled }: {
   label: string;
-  icon: React.ComponentType<{ size?: number }>;
+  icon: LucideIcon;
   active: boolean;
   activeClass: string;
   onClick: () => void;

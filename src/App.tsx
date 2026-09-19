@@ -13,7 +13,7 @@ import type { Loop, LoopStatus } from './types';
 type FilterTab = 'All' | LoopStatus;
 
 export default function App() {
-  const { isOnline, syncState, lastSyncMessage } = useOnlineStatus();
+  const { isOnline, syncState } = useOnlineStatus();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterTab>('All');
   const [activeLoopId, setActiveLoopId] = useState<number | null>(null);

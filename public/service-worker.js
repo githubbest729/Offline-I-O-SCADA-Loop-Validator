@@ -17,12 +17,18 @@
  */
 
 const CACHE_VERSION = 'loop-validator-v1';
+
+// `self.registration.scope` is the directory the SW was registered from
+// (e.g. 'https://user.github.io/repo-name/' on GitHub Pages, or
+// 'https://example.com/' at a domain root) — resolving against it instead
+// of hardcoding '/' means this file works unmodified in either case.
+const SCOPE = self.registration.scope;
 const APP_SHELL = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  new URL('.', SCOPE).pathname,
+  new URL('index.html', SCOPE).pathname,
+  new URL('manifest.json', SCOPE).pathname,
+  new URL('icons/icon-192.png', SCOPE).pathname,
+  new URL('icons/icon-512.png', SCOPE).pathname,
 ];
 
 const DB_NAME = 'scada_loop_validator_db';
@@ -82,7 +88,7 @@ self.addEventListener('fetch', (event) => {
   // links still open the app offline.
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match('/index.html'))
+      fetch(request).catch(() => caches.match(new URL('index.html', SCOPE).pathname))
     );
   }
 });
