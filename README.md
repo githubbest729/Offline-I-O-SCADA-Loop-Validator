@@ -109,7 +109,7 @@ flowchart LR
     style DB fill:#0369a1,color:#fff
     style SW fill:#64748b,color:#fff
 
-```mermaid
+```
 
 ### Data-integrity guarantees
 
