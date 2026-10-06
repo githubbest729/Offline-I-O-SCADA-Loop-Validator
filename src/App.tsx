@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import {
   Wifi, WifiOff, RefreshCw, Search, Upload,
   CheckCircle2, XCircle, Clock, AlertTriangle, Settings as SettingsIcon,
+  HelpCircle, FileSpreadsheet
 } from 'lucide-react';
 import { db, importLoops, saveSettings, getSettings } from './db/database';
 import { parseTagCsv } from './utils/csvParser';
@@ -20,10 +21,9 @@ export default function App() {
   const [importBusy, setImportBusy] = useState(false);
   const [importMsg, setImportMsg] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [showHelp, setShowHelp] = useState(false); // Added Help State
 
-  // Live-queried directly from IndexedDB. Any mutation anywhere in the app
-  // (a status toggle, a photo attach) re-renders this automatically —
-  // there is no separate "app state" that can drift from what's persisted.
+  // Live-queried directly from IndexedDB.
   const loops = useLiveQuery(() => db.loops.orderBy('tagName').toArray(), []) ?? [];
   const settings = useLiveQuery(() => getSettings(), []);
   const pendingSyncCount = useLiveQuery(() => db.syncQueue.count(), []) ?? 0;
@@ -87,6 +87,13 @@ export default function App() {
               <input type="file" accept=".csv" className="hidden" onChange={handleCsvUpload} />
             </label>
             <button
+              onClick={() => setShowHelp(true)}
+              className="p-3 rounded-xl bg-slate-800 active:bg-slate-700 min-h-[44px] min-w-[44px] text-slate-300"
+              aria-label="Help & Information"
+            >
+              <HelpCircle size={18} />
+            </button>
+            <button
               onClick={() => setShowSettings(true)}
               className="p-3 rounded-xl bg-slate-800 active:bg-slate-700 min-h-[44px] min-w-[44px]"
               aria-label="Settings"
@@ -130,7 +137,7 @@ export default function App() {
       {/* ---- Loop List ---- */}
       <main className="flex-1 px-4 py-3 pb-24 space-y-3">
         {loops.length === 0 && (
-          <EmptyState />
+          <EmptyState onOpenHelp={() => setShowHelp(true)} />
         )}
         {loops.length > 0 && filteredLoops.length === 0 && (
           <p className="text-center text-slate-500 py-12">No loops match your search/filter.</p>
@@ -157,13 +164,16 @@ export default function App() {
           }}
         />
       )}
+
+      {showHelp && (
+        <HelpSheet onClose={() => setShowHelp(false)} />
+      )}
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Presentational subcomponents (kept in this file for brevity; split out
-// into src/components/ as the app grows)
+// Presentational subcomponents
 // ---------------------------------------------------------------------------
 
 function StatusPill({ isOnline, syncState, pendingCount }: {
@@ -249,12 +259,54 @@ function LoopRow({ loop, onOpen }: { loop: Loop; onOpen: () => void }) {
   );
 }
 
-function EmptyState() {
+function EmptyState({ onOpenHelp }: { onOpenHelp: () => void }) {
+  const handleDownloadTemplate = () => {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      "Tag Name,Description,Signal Type,PLC Address,Area\n" +
+      "FIC-101.PV,Feedwater Flow Controller,AI,%MW1024,Unit 200\n" +
+      "XV-204,Isolation Valve,DO,%QX2.3,Unit 200";
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "sample_loop_template.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <div className="text-center py-16 px-4">
-      <Upload className="mx-auto text-slate-700 mb-4" size={48} />
-      <p className="text-slate-400 font-semibold mb-1">No loops loaded yet</p>
-      <p className="text-slate-600 text-sm">Import a PLC/AVEVA tag CSV to start commissioning.</p>
+    <div className="max-w-md mx-auto text-center py-12 px-4 space-y-4">
+      <div className="w-14 h-14 bg-cyan-950 text-cyan-400 rounded-2xl flex items-center justify-center mx-auto">
+        <FileSpreadsheet size={28} />
+      </div>
+
+      <div>
+        <h2 className="text-lg font-bold text-slate-100">Offline I/O Loop Validator</h2>
+        <p className="text-slate-400 text-sm mt-1">
+          Commissioning tool for field verification of PLC and SCADA I/O loops. Works 100% offline with zero data loss.
+        </p>
+      </div>
+
+      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-left text-xs space-y-2 font-mono text-slate-300">
+        <p className="font-semibold text-slate-400 uppercase tracking-wider font-sans">Required CSV Format:</p>
+        <p className="text-cyan-400">Tag Name, Description, Signal Type, PLC Address, Area</p>
+      </div>
+
+      <div className="flex gap-2 justify-center pt-2">
+        <button
+          onClick={handleDownloadTemplate}
+          className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold transition"
+        >
+          Download Sample CSV
+        </button>
+        <button
+          onClick={onOpenHelp}
+          className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 text-sm font-semibold transition"
+        >
+          How it Works
+        </button>
+      </div>
     </div>
   );
 }
@@ -307,3 +359,14 @@ function SettingsSheet({ initial, onClose, onSave }: {
     </div>
   );
 }
+
+function HelpSheet({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-30 bg-black/70 flex items-end sm:items-center sm:justify-center p-0 sm:p-4">
+      <div className="w-full max-w-lg bg-slate-900 rounded-t-2xl sm:rounded-2xl p-6 space-y-4 max-h-[85vh] overflow-y-auto">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+          <h2 className="text-lg font-bold">About Loop Validator</h2>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-white">✕</button>
+        </div>
+
+        <div className="text-sm text-slate-300
