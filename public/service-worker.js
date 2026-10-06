@@ -16,7 +16,7 @@
  *     zero dependency on the page being alive.
  */
 
-const CACHE_VERSION = 'loop-validator-v1';
+const CACHE_VERSION = 'loop-validator-v2';
 
 // `self.registration.scope` is the directory the SW was registered from
 // (e.g. 'https://user.github.io/repo-name/' on GitHub Pages, or
