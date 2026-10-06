@@ -63,24 +63,21 @@ change, which is why the Actions workflow above is the better default.
 
 ## Architecture
 
-```text
-public/
-  manifest.json        PWA manifest
-  service-worker.js    App-shell cache + Background Sync (works with tab closed)
-src/
-  types/index.ts       Domain types (Loop, PhotoRecord, SyncQueueItem, AppSettings)
-  db/database.ts       Dexie schema + transactional mutation helpers
-  utils/csvParser.ts   Header-tolerant PLC/AVEVA tag CSV importer
-  utils/sync.ts        Foreground webhook sync (mirrors service-worker.js logic)
-  hooks/             
-    useOnlineStatus.ts Network + sync-progress state for the UI
-  components/
-    ValidationCard.tsx Full-screen loop detail: status, photos, sign-off
-    CameraCapture.tsx  getUserMedia wrapper for instrumentation photos
-  App.tsx              CSV upload, live list, search/filter, status bar
-  main.tsx             SW registration + Background Sync request wiring
-
-```
+📦 src/
+├── 📂 types/
+│   └── 📄 index.ts           # Domain types (Loop, PhotoRecord, SyncQueueItem)
+├── 📂 db/
+│   └── 📄 database.ts        # Dexie schema + transactional mutation helpers
+├── 📂 utils/
+│   ├── 📄 csvParser.ts       # Header-tolerant PLC/AVEVA tag CSV importer
+│   └── 📄 sync.ts            # Foreground webhook sync logic
+├── 📂 hooks/
+│   └── 📄 useOnlineStatus.ts # Network + sync-progress state for the UI
+├── 📂 components/
+│   ├── 📄 ValidationCard.tsx # Full-screen loop detail: status, photos, sign-off
+│   └── 📄 CameraCapture.tsx  # getUserMedia wrapper for instrumentation photos
+├── 📄 App.tsx                # CSV upload, live list, search/filter, status bar
+└── 📄 main.tsx               # SW registration + Background Sync request wiring
 
 ### Data-integrity guarantees
 
