@@ -79,6 +79,33 @@ change, which is why the Actions workflow above is the better default.
 ├── 📄 App.tsx                # CSV upload, live list, search/filter, status bar
 └── 📄 main.tsx               # SW registration + Background Sync request wiring
 
+### System Data Flow
+
+```mermaid
+flowchart LR
+    subgraph Device [Field Device / PWA]
+        UI[React Dashboard]
+        DB[(IndexedDB / Dexie)]
+        SW[[Service Worker]]
+        
+        UI -- 1. Transaction --> DB
+        DB -- 2. Queue Outbox --> SW
+    end
+
+    subgraph Cloud [Integration Layer]
+        N8N((n8n Webhook))
+        Dest[ClickUp / DB]
+        
+        SW -- 3. Sync on Reconnect --> N8N
+        N8N -- 4. Transform & Route --> Dest
+    end
+
+    style Device fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style Cloud fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#fff
+    style DB fill:#0369a1,color:#fff
+    style SW fill:#64748b,color:#fff
+```
+
 ### Data-integrity guarantees
 
 * **No unsaved state.** Every user action (status toggle, photo capture,
