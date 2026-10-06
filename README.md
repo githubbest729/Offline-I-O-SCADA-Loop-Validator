@@ -1,74 +1,151 @@
-Yes, the `README.md` you provided is **perfectly legitimate, well-structured, and technically accurate** for the application you have built. It serves as an excellent technical summary.
-
-Here is a breakdown of why it is solid and a few minor suggestions for how you could enhance it to make it even more professional, especially regarding features, charts, visuals, and icons.
-
-### Why Your Current README is Great
-
-1. **Clear Architecture Summary:** You clearly outline the files and their purposes. Explaining that `service-worker.js` handles the app-shell cache and background sync while `db/database.ts` handles the Dexie schema is very helpful for other developers.
-2. **Deployment Instructions:** Providing a specific guide on how to deploy this using GitHub Actions (`.github/workflows/deploy.yml`) is incredibly useful. You even noted the potential pitfall of Vite needing the correct `base` URL for GitHub Pages.
-3. **Explaining the "Why":** The "Data-integrity guarantees" section is the strongest part. You explicitly explain *why* you chose the Outbox pattern and Dexie transactions (no unsaved state, background sync). This shows a deep understanding of offline-first applications.
-4. **Integration Details:** The section detailing the exact JSON payload sent to the webhook (n8n/ClickUp) gives integrators exactly what they need to know without having to read the source code.
-5. **CSV Formatting:** Showing the expected CSV format prevents immediate user errors when they try to import tags.
-
-### Suggestions to Enhance Your README (Adding 2026 Polish)
-
-To make it look like a top-tier, modern repository, you can add a few things to make it more visually appealing and informative for end-users (not just developers).
-
-#### 1. Add "Features" Bullet Points
-
-Right under the description, add a quick bulleted list of features. This tells users immediately what the app can do.
-
 ```markdown
-## Features
-* **100% Offline-First:** Designed for deep plant areas with zero network connectivity.
-* **Transactional Reliability:** Powered by IndexedDB/Dexie. No "Save" button required; every action is instantly persisted.
-* **Background Sync:** Webhook payloads (via n8n or custom endpoints) queue automatically and sync when the device reconnects, even if the app is closed.
-* **Native Camera Integration:** Capture, compress (85% JPEG), and attach instrumentation photos directly to loops.
-* **Digital Sign-offs:** Secure timestamps and technician signatures per loop.
+# Offline I/O & SCADA Loop Validator
 
-```
-
-#### 2. Add Visuals (Screenshots)
-
-A picture is worth a thousand words. You should add screenshots of your app so people know what it looks like before they deploy it.
-You can take screenshots of:
-
-1. The main dashboard (showing pending/passed/failed loops).
-2. The Validation Card (showing the camera and sign-off options).
-
-You can add them to the README like this:
-
-```markdown
-## Screenshots
-![Dashboard](link-to-your-dashboard-screenshot.png)
-![Validation Card](link-to-your-validation-card-screenshot.png)
-
-```
-
-*(You can store these images in a `docs/` or `assets/` folder in your repo).*
-
-#### 3. Mention the "Help" Modal You Just Added!
-
-You just spent time adding a great onboarding screen. Mention it!
-
-```markdown
-## Onboarding & Help
-Includes an in-app "How it Works" guide and a downloadable sample CSV template so field technicians can start commissioning immediately without external documentation.
-
-```
-
-#### 4. Add Badges (Optional but professional)
-
-Developers love badges. You can add these to the very top of your README under the title:
-
-```markdown
 ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Dexie.js](https://img.shields.io/badge/Dexie.js-Offline_Storage-blue?style=for-the-badge)
 
+Offline-first PWA for field commissioning of PLC / AVEVA System Platform I/O loops.
+
+## Features
+
+* **100% Offline-First:** Designed for deep plant areas and factory floors with zero network connectivity.
+* **Transactional Reliability:** Powered by IndexedDB/Dexie. No "Save" button required; every action is instantly persisted.
+* **Background Sync:** Webhook payloads (via n8n, ClickUp, or custom endpoints) queue automatically and sync when the device reconnects, even if the app is closed.
+* **Native Camera Integration:** Capture, compress (85% JPEG), and attach instrumentation photos directly to loops to save bandwidth over cellular connections.
+* **Digital Sign-offs:** Secure timestamps and technician signatures per loop.
+* **Built-in Onboarding:** Includes an in-app "How it Works" guide and a downloadable sample CSV template so field technicians can start commissioning immediately.
+
+## Screenshots
+
+*(Note: Add screenshots to your repository's `/public` or `/docs` folder and update these links)*
+
+![Dashboard](./docs/dashboard-screenshot.png)
+![Validation Card](./docs/validation-screenshot.png)
+
+## Quick start
+
+```bash
+npm install
+npm run dev       # local dev server, LAN-exposed for phone testing
+npm run build     # production build to dist/
+
 ```
 
-### The Verdict
+Generate `public/icons/icon-192.png`, `icon-512.png`, `icon-maskable-192.png`,
+and `icon-maskable-512.png` before deploying (any square PNG works for dev).
 
-Your current README is **highly validated and legitimate**. If you add the features list and a couple of screenshots, it will be a perfect, professional-grade repository document!
+## Deploying to GitHub Pages
+
+GitHub Pages only serves static files — it does **not** run a build step for
+you. `index.html` in this repo points at `/src/main.tsx`, which only works
+through Vite's dev server or after a build, so pushing the raw source to
+`main` and pointing Pages at it will show a blank page.
+
+**This repo includes `.github/workflows/deploy.yml**`, which builds the app
+with Vite and publishes the `dist/` output automatically on every push to
+`main`. To use it:
+
+1. In your repo, go to **Settings → Pages → Build and deployment → Source**
+and select **GitHub Actions** (not "Deploy from a branch").
+2. `vite.config.ts` sets `base: '/Offline-I-O-SCADA-Loop-Validator/'` — this
+**must exactly match your repo name** (case-sensitive), since project
+Pages sites are served from `https://<user>.github.io/<repo-name>/`, not
+the domain root. If you rename the repo, update this value too.
+3. Push to `main`. The Actions tab will show the build/deploy run; the site
+updates automatically a minute or two later.
+
+If you'd rather not use Actions and just want to commit a `dist/` folder to
+`main`/root directly: run `npm run build` locally, then copy everything from
+`dist/` into your repo root (or a `docs/` folder, pointing Pages at that
+instead) and commit it. You'll need to repeat this manually after every
+change, which is why the Actions workflow above is the better default.
+
+## Architecture
+
+```text
+public/
+  manifest.json        PWA manifest
+  service-worker.js    App-shell cache + Background Sync (works with tab closed)
+src/
+  types/index.ts       Domain types (Loop, PhotoRecord, SyncQueueItem, AppSettings)
+  db/database.ts       Dexie schema + transactional mutation helpers
+  utils/csvParser.ts   Header-tolerant PLC/AVEVA tag CSV importer
+  utils/sync.ts        Foreground webhook sync (mirrors service-worker.js logic)
+  hooks/             
+    useOnlineStatus.ts Network + sync-progress state for the UI
+  components/
+    ValidationCard.tsx Full-screen loop detail: status, photos, sign-off
+    CameraCapture.tsx  getUserMedia wrapper for instrumentation photos
+  App.tsx              CSV upload, live list, search/filter, status bar
+  main.tsx             SW registration + Background Sync request wiring
+
+```
+
+### Data-integrity guarantees
+
+* **No unsaved state.** Every user action (status toggle, photo capture,
+sign-off) is a single Dexie transaction that writes directly to
+IndexedDB and enqueues a sync record. There is no "Save" button and no
+React state that could be lost if the tab is killed.
+* **Outbox pattern.** The `syncQueue` table decouples "the data exists"
+from "the data has been sent." A crash mid-sync just leaves queue items
+in place — retried next time, never duplicated (queue entries are
+keyed per entity and only cleared on confirmed webhook success).
+* **Sync works with the tab closed.** The Background Sync API fires the
+service worker even if the user has locked their phone or closed the
+browser. The worker talks to IndexedDB with the raw API (no bundler
+dependency) so it can run standalone. Browsers without Background Sync
+support (notably iOS Safari) fall back to a `postMessage`-triggered sync
+on the `online` event, handled by the same code path in the worker.
+
+### Wiring up n8n
+
+1. In n8n, add a **Webhook** node (POST, "Respond immediately").
+2. Paste that URL into the app's Settings sheet.
+3. The payload shape POSTed on each loop sync:
+
+```json
+{
+  "loop": {
+    "id": 42,
+    "tagName": "FIC-101.PV",
+    "description": "Feedwater Flow Controller",
+    "signalType": "AI",
+    "plcAddress": "%MW1024",
+    "status": "Passed",
+    "signedBy": "J. Alvarez",
+    "signedAt": 1732000000000,
+    "syncStatus": "pending",
+    "lastModified": 1732000000000,
+    "createdAt": 1731990000000,
+    "version": 3
+  },
+  "photos": [
+    { "id": 7, "filename": "FIC-101.PV_7.jpg", "mimeType": "image/jpeg", "base64": "..." }
+  ],
+  "device": { "userAgent": "...", "syncedAt": 1732000000000 }
+}
+
+```
+
+4. From there, an n8n **Set** + **HTTP Request** node can reshape/forward
+this into a ClickUp task create/update call, or write straight to a
+database/Sheet.
+
+### CSV format
+
+Header names are matched case-insensitively with common aliases
+(`Tag`, `TagName`, `Tag Name`; `Address`, `PLC Address`; etc.):
+
+```csv
+Tag Name,Description,Signal Type,PLC Address,Area
+FIC-101.PV,Feedwater Flow Controller,AI,%MW1024,Unit 200
+XV-204,Isolation Valve,DO,%QX2.3,Unit 200
+
+```
+
+```
+
+```
