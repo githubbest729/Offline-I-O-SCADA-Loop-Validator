@@ -80,7 +80,7 @@ change, which is why the Actions workflow above is the better default.
 ├── 📄 App.tsx                # CSV upload, live list, search/filter, status bar
 └── 📄 main.tsx               # SW registration + Background Sync request wiring
 
-```text
+```
 
 ### System Data Flow
 
