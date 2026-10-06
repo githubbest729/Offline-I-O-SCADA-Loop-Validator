@@ -80,7 +80,6 @@ change, which is why the Actions workflow above is the better default.
 ├── 📄 App.tsx                # CSV upload, live list, search/filter, status bar
 └── 📄 main.tsx               # SW registration + Background Sync request wiring
 
-
 ### System Data Flow
 
 
@@ -106,7 +105,6 @@ flowchart LR
     style Cloud fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#fff
     style DB fill:#0369a1,color:#fff
     style SW fill:#64748b,color:#fff
-
 
 ### Data-integrity guarantees
 
