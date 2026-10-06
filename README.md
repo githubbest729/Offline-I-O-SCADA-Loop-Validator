@@ -1,4 +1,3 @@
-
 # Offline I/O & SCADA Loop Validator
 
 ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
@@ -31,7 +30,7 @@ npm install
 npm run dev       # local dev server, LAN-exposed for phone testing
 npm run build     # production build to dist/
 
-```
+
 
 Generate `public/icons/icon-192.png`, `icon-512.png`, `icon-maskable-192.png`,
 and `icon-maskable-512.png` before deploying (any square PNG works for dev).
