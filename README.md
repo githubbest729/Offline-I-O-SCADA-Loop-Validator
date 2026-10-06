@@ -80,8 +80,9 @@ change, which is why the Actions workflow above is the better default.
 ├── 📄 App.tsx                # CSV upload, live list, search/filter, status bar
 └── 📄 main.tsx               # SW registration + Background Sync request wiring
 
-### System Data Flow
+```text
 
+### System Data Flow
 
 flowchart LR
     subgraph Device [Field Device / PWA]
