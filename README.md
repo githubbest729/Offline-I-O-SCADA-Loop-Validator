@@ -81,6 +81,9 @@ change, which is why the Actions workflow above is the better default.
 
 ### System Data Flow
 
+### System Data Flow
+
+
 ```mermaid
 flowchart LR
     subgraph Device [Field Device / PWA]
@@ -105,6 +108,7 @@ flowchart LR
     style DB fill:#0369a1,color:#fff
     style SW fill:#64748b,color:#fff
 ```
+
 
 ### Data-integrity guarantees
 
