@@ -369,4 +369,26 @@ function HelpSheet({ onClose }: { onClose: () => void }) {
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-white">✕</button>
         </div>
 
-        <div className="text-sm text-slate-300
+        <div className="text-sm text-slate-300 space-y-3">
+          <p>
+            This tool is designed for instrumentation & control engineers to perform field checkouts and loop tests in plant areas with poor or no network connectivity.
+          </p>
+
+          <h3 className="font-bold text-cyan-400">Workflow:</h3>
+          <ol className="list-decimal pl-5 space-y-1.5 text-slate-400">
+            <li><strong className="text-slate-200">Import CSV:</strong> Load your tag database.</li>
+            <li><strong className="text-slate-200">Validate Loops:</strong> Mark tags as Passed/Failed, attach photos, and sign off.</li>
+            <li><strong className="text-slate-200">Automatic Sync:</strong> Once online, all checkouts automatically sync to your configured webhook (n8n/ClickUp).</li>
+          </ol>
+        </div>
+
+        <button
+          onClick={onClose}
+          className="w-full py-3 rounded-xl bg-cyan-600 font-semibold text-white mt-4"
+        >
+          Got it
+        </button>
+      </div>
+    </div>
+  );
+}
